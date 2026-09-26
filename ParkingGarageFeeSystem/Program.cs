@@ -11,12 +11,11 @@ namespace ParkingGarageFeeSystem
         static void Main(string[] args)
         {
             //Declare and Initialise needed variables
-            int iDaysParked;
-            int iCarsParked;
+            int daysParked, carsParked, hoursParked;
+            decimal dailyRevenue = 0;
             bool isDaysValid = true;
             bool isCarsValid = true;
             bool isHoursValid = true;
-            int iHoursParked;
 
             //Displays greeting message
             Console.WriteLine("Welcome to Parking Garage System");
@@ -26,65 +25,54 @@ namespace ParkingGarageFeeSystem
             do
             {
                 Console.Write("Enter the number of days the car will be parked: ");
-                isDaysValid = int.TryParse(Console.ReadLine(), out iDaysParked);
-                if ((!isDaysValid) || (iDaysParked < 0))
+                isDaysValid = int.TryParse(Console.ReadLine(), out daysParked);
+                if ((!isDaysValid) || (daysParked < 0))
                 {
                     Console.WriteLine("Invalid input. Please try again.");
                 }
             }
-            while ((!isDaysValid) || (iDaysParked < 0));
+            while ((!isDaysValid) || (daysParked < 0));
             Console.WriteLine();
 
             //Allows user to enter the number of cars that will be parked, and validates if the input is valid
             do
             {
                 Console.Write("Enter the number of cars that will be parked: ");
-                isCarsValid = int.TryParse(Console.ReadLine(), out iCarsParked);
-                if ((!isCarsValid) || (iCarsParked < 0))
+                isCarsValid = int.TryParse(Console.ReadLine(), out carsParked);
+                if ((!isCarsValid) || (carsParked < 0))
                 {
                     Console.WriteLine("Invalid input. Please try again.");
                 }
             }
-            while ((!isCarsValid) || (iCarsParked < 0));
+            while ((!isCarsValid) || (carsParked < 0));
 
             //Display results
-            for (int iDayNumber = 1; iDayNumber <= iDaysParked; iDayNumber++)
+            for (int dayNumber = 0; dayNumber < daysParked; dayNumber++)
             {
-                Console.WriteLine($"\nDay {iDayNumber}");
-                for (int iCarNumber = 1; iCarNumber <= iCarsParked; iCarNumber++)
-                {
-                    Console.Write($"Enter hours parked for car {iCarNumber} for day {iDayNumber}: ");
-                    if (int.TryParse(Console.ReadLine(), out iHoursParked))
-                    {
-                        if ((iHoursParked >= 0)&& (iHoursParked <= 24))
-                        {
-                            DisplayHoursParked(iHoursParked, iCarNumber);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid time range.");
-                        }
-                    }
-                    else
-                    {
-                        do
-                        {
-                            Console.WriteLine("Invalid input. Please try again.");
-                            Console.Write($"Enter hours parked for car {iCarNumber} for day {iDayNumber}: ");
-                            isHoursValid = int.TryParse(Console.ReadLine(), out iHoursParked);
-                        }
-                        while (!isHoursValid);
+                dailyRevenue = 0;
 
-                        if ((iHoursParked >= 0) && (iHoursParked <= 24))
+                Console.WriteLine($"\nDay {dayNumber + 1}");
+                for (int carNumber = 0; carNumber < carsParked; carNumber++)
+                {
+                    do
+                    {
+                        Console.Write($"Enter hours parked for car {carNumber + 1} for day {dayNumber + 1}: ");
+                        isHoursValid = int.TryParse(Console.ReadLine(), out hoursParked);
+
+                        if ((!isHoursValid)||(hoursParked < 0)||(hoursParked > 24))
                         {
-                            DisplayHoursParked(iHoursParked,iCarNumber);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid time range.");
+                            Console.WriteLine("Invalid input. Please enter a valid number between 0 and 24.");
+
+                            isHoursValid = false;
                         }
                     }
+                    while ((!isHoursValid) || (hoursParked < 0) || (hoursParked > 24));
+
+                    dailyRevenue += DisplayHoursParked(hoursParked, carNumber + 1);
                 }
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"\n\t\tTotal Parking Fee for Day {dayNumber + 1}: {dailyRevenue.ToString("C2")}");
+                Console.ResetColor();
             }
 
             //Wait and Close Program
@@ -93,25 +81,28 @@ namespace ParkingGarageFeeSystem
         }
         //Main method
 
-        static void DisplayHoursParked(int iHoursParked, int iCarNumber)
+        static decimal DisplayHoursParked(int hoursParked, int carNumber)
         {
-            //Declare needed variables.
+            //Declare needed variables
+            decimal parkingFee = 0;
 
             //Check if long/short stay
-            if (iHoursParked <= 5)
+            if (hoursParked <= 5)
             {
-                double dParkingFee = iHoursParked * 10d;
+                parkingFee = hoursParked * 10m;
                 Console.BackgroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"\tCar {iCarNumber} parked for {iHoursParked} hours (Short Stay) costing a fee of " + dParkingFee.ToString("C2") + ".");
+                Console.WriteLine($"\tCar {carNumber} parked for {hoursParked} hours (Short Stay) costing a fee of " + parkingFee.ToString("C2") + ".");
                 Console.ResetColor();
             }
             else
             {
-                double dParkingFee = iHoursParked * 10d;
+                parkingFee = 200.00m;
                 Console.BackgroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"\tCar {iCarNumber} parked for {iHoursParked} hours (Long Stay) costing a fee of " + dParkingFee.ToString("C2") + ".");
+                Console.WriteLine($"\tCar {carNumber} parked for {hoursParked} hours (Long Stay) costing a fee of " + parkingFee.ToString("C2") + ".");
                 Console.ResetColor();
             }
+
+            return (parkingFee);
         }
         //DisplayHoursParked
     }
