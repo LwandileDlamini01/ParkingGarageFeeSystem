@@ -1,0 +1,1 @@
+I have created a Parking Garage Fee, console-based, calculator application that asks the user for the total number of day(s) and the total number of car(s) that will be parked. The application then asks the user how long each car was parked, then calculates the total amount due based on the hours parked, and then determines if it's a long/short stay.
